@@ -22,7 +22,8 @@ def create_app():
     app = Flask(__name__)
     
     # Enable CORS for standard React app origins
-    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    CORS(app, resources={r"/api/*": {"origins": [frontend_url, "http://localhost:5173"]}}, supports_credentials=True)
     
     # Configure JSON encoder keys
     app.config['JSON_SORT_KEYS'] = False
