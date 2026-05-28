@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // Empty baseline because Vite proxy forwards all '/api' routes directly to our Flask port
-  baseURL: '',
+  // Load API base URL from Vite environment variables for Vercel production deployment,
+  // falling back to empty string in development so the Vite proxy takes care of the routing.
+  baseURL: import.meta.env.VITE_API_URL || '',
 });
 
 // Interceptor to inject JWT authentication token automatically before execution
