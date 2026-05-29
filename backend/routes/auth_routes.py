@@ -1,270 +1,70 @@
-from flask import Blueprint
+from flask_restx import Namespace, Resource, fields
 from backend.controllers.auth_controller import register_user, login_user, get_user_profile, update_user_profile
 from backend.middleware.auth import token_required
 
-auth_bp = Blueprint("auth", __name__)
+# Define Authentication Namespace
+auth_ns = Namespace("auth", description="Authentication & Profile Operations")
 
-@auth_bp.route("/register", methods=["POST"])
-def register():
-    """
-    Register a new user account
-    ---
-    tags:
-      - Authentication
-    summary: Register user
-    description: Create a new account with a unique username and email. Returns a JWT access token.
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - username
-            - email
-            - password
-          properties:
-            username:
-              type: string
-              minLength: 3
-              description: Unique username (at least 3 characters)
-              example: abinesh_dev
-            email:
-              type: string
-              format: email
-              description: Valid unique email address
-              example: abinesh@example.com
-            password:
-              type: string
-              minLength: 6
-              description: Account password (at least 6 characters)
-              example: secret123
-    responses:
-      201:
-        description: User registered successfully
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: User registered successfully
-            token:
-              type: string
-              description: JWT Access Token (expires in 24 hours)
-              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-            user:
-              type: object
-              properties:
-                id:
-                  type: string
-                  example: 66532d847a9efcb2f5e3df12
-                username:
-                  type: string
-                  example: abinesh_dev
-                email:
-                  type: string
-                  example: abinesh@example.com
-                avatar:
-                  type: string
-                  nullable: true
-                  example: null
-      400:
-        description: Validation error or user already exists
-        schema:
-          type: object
-          properties:
-            error:
-              type: string
-              example: User with this email already exists
-      500:
-        description: Database registration failed
-    """
-    return register_user()
+# Helper to unwrap Flask Tuple Responses for Flask-RESTX compatibility
+def flask_response(res):
+    if isinstance(res, tuple):
+        response_obj, status_code = res
+        response_obj.status_code = status_code
+        return response_obj
+    return res
 
-@auth_bp.route("/login", methods=["POST"])
-def login():
-    """
-    Log in to an existing account
-    ---
-    tags:
-      - Authentication
-    summary: Log in user
-    description: Authenticates user credentials and issues a JWT token.
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - email
-            - password
-          properties:
-            email:
-              type: string
-              format: email
-              description: Registered email address
-              example: abinesh@example.com
-            password:
-              type: string
-              description: Account password
-              example: secret123
-    responses:
-      200:
-        description: Login successful, returns access token
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Login successful
-            token:
-              type: string
-              description: JWT Access Token (expires in 24 hours)
-              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-            user:
-              type: object
-              properties:
-                id:
-                  type: string
-                  example: 66532d847a9efcb2f5e3df12
-                username:
-                  type: string
-                  example: abinesh_dev
-                email:
-                  type: string
-                  example: abinesh@example.com
-                avatar:
-                  type: string
-                  nullable: true
-                  example: null
-      400:
-        description: Fields are missing
-      401:
-        description: Invalid credentials
-        schema:
-          type: object
-          properties:
-            error:
-              type: string
-              example: Invalid email or password
-      500:
-        description: Internal server error during login
-    """
-    return login_user()
+# Swagger Request Models
+register_model = auth_ns.model("RegisterRequest", {
+    "username": fields.String(required=True, description="Unique username (min 3 chars)", example="abinesh_dev"),
+    "email": fields.String(required=True, description="Valid unique email address", example="abinesh@example.com"),
+    "password": fields.String(required=True, description="Password (min 6 chars)", example="secret123")
+})
 
-@auth_bp.route("/profile", methods=["GET"])
-@token_required
-def profile(current_user_id):
-    """
-    Retrieve authenticated user profile details
-    ---
-    tags:
-      - Authentication
-    summary: Get user profile
-    description: Returns details of the currently authenticated user session. Requires Bearer Token.
-    security:
-      - Bearer: []
-    responses:
-      200:
-        description: Profile details retrieved successfully
-        schema:
-          type: object
-          properties:
-            id:
-              type: string
-              example: 66532d847a9efcb2f5e3df12
-            username:
-              type: string
-              example: abinesh_dev
-            email:
-              type: string
-              example: abinesh@example.com
-            avatar:
-              type: string
-              nullable: true
-              description: Base64 or Data URI string of the profile picture
-              example: null
-            createdAt:
-              type: string
-              format: date-time
-              example: "2026-05-26T14:14:04.000Z"
-      401:
-        description: Session expired, invalid, or missing token
-        schema:
-          type: object
-          properties:
-            error:
-              type: string
-              example: Session expired. Please log in again.
-      404:
-        description: User account not found
-      500:
-        description: Failed to retrieve profile details
-    """
-    return get_user_profile(current_user_id)
+login_model = auth_ns.model("LoginRequest", {
+    "email": fields.String(required=True, description="Registered email address", example="abinesh@example.com"),
+    "password": fields.String(required=True, description="Account password", example="secret123")
+})
 
-@auth_bp.route("/profile", methods=["PUT"])
-@token_required
-def update_profile(current_user_id):
-    """
-    Update authenticated user's profile picture
-    ---
-    tags:
-      - Authentication
-    summary: Update profile avatar
-    description: Updates the profile avatar image utilizing a Data URI. Requires Bearer Token.
-    security:
-      - Bearer: []
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - avatar
-          properties:
-            avatar:
-              type: string
-              description: Valid base64 image data URI (must start with data:image/)
-              example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ix..."
-    responses:
-      200:
-        description: Profile picture updated successfully
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Profile picture updated successfully!
-            user:
-              type: object
-              properties:
-                id:
-                  type: string
-                  example: 66532d847a9efcb2f5e3df12
-                username:
-                  type: string
-                  example: abinesh_dev
-                email:
-                  type: string
-                  example: abinesh@example.com
-                avatar:
-                  type: string
-                  example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ix..."
-      400:
-        description: Invalid image format (must be standard data:image/ format)
-        schema:
-          type: object
-          properties:
-            error:
-              type: string
-              example: Invalid image format. Must be a valid image data URI.
-      401:
-        description: Session expired or invalid token
-      500:
-        description: Failed to update profile picture
-    """
-    return update_user_profile(current_user_id)
+profile_update_model = auth_ns.model("ProfileUpdateRequest", {
+    "avatar": fields.String(required=True, description="Base64 encoded image Data URI (must start with data:image/)", example="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAY=")
+})
 
+@auth_ns.route("/register")
+class AuthRegister(Resource):
+    @auth_ns.expect(register_model)
+    @auth_ns.response(201, "User registered successfully")
+    @auth_ns.response(400, "Validation error or user already exists")
+    def post(self):
+        """Register a new user account"""
+        return flask_response(register_user())
+
+@auth_ns.route("/login")
+class AuthLogin(Resource):
+    @auth_ns.expect(login_model)
+    @auth_ns.response(200, "Login successful")
+    @auth_ns.response(400, "Missing fields")
+    @auth_ns.response(401, "Invalid credentials")
+    def post(self):
+        """Log in to an existing account"""
+        return flask_response(login_user())
+
+@auth_ns.route("/profile")
+class UserProfile(Resource):
+    @auth_ns.doc(security="Bearer")
+    @auth_ns.response(200, "Profile details retrieved successfully")
+    @auth_ns.response(401, "Session expired or access token is missing/invalid")
+    @auth_ns.response(404, "User account not found")
+    @token_required
+    def get(self, current_user_id):
+        """Retrieve authenticated user profile details"""
+        return flask_response(get_user_profile(current_user_id))
+
+    @auth_ns.doc(security="Bearer")
+    @auth_ns.expect(profile_update_model)
+    @auth_ns.response(200, "Profile picture updated successfully")
+    @auth_ns.response(400, "Invalid image format")
+    @auth_ns.response(401, "Session expired or access token is missing/invalid")
+    @token_required
+    def put(self, current_user_id):
+        """Update authenticated user's profile picture"""
+        return flask_response(update_user_profile(current_user_id))

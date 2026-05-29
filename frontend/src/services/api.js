@@ -20,4 +20,22 @@ api.interceptors.request.use(
   }
 );
 
+// Interceptor to handle HTML responses (Vercel rewrites fallback) and expired tokens
+api.interceptors.response.use(
+  (response) => {
+    const contentType = response.headers['content-type'] || '';
+    if (contentType && contentType.includes('text/html')) {
+      return Promise.reject(new Error('Received HTML response instead of JSON. The API endpoint may be incorrect or server is down.'));
+    }
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      console.warn('Session expired or unauthorized. Logging out.');
+      localStorage.removeItem('spendwise_token');
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

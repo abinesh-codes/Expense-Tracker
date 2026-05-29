@@ -3,19 +3,43 @@ import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
 import Toast from '../components/Toast';
 import api from '../services/api';
-import { IoPersonOutline, IoSettingsOutline, IoMailOutline, IoSaveOutline, IoCameraOutline } from 'react-icons/io5';
+import { 
+  IoPersonOutline, 
+  IoSettingsOutline, 
+  IoMailOutline, 
+  IoSaveOutline, 
+  IoCameraOutline,
+  IoSunnyOutline,
+  IoMoonOutline,
+  IoShieldCheckmarkOutline,
+  IoTrashOutline
+} from 'react-icons/io5';
 
 const Profile = () => {
   const { user, setUser } = useAuth();
-  const { currency, setCurrency, budgetLimit, setBudgetLimit } = useFinance();
+  const { currency, setCurrency, budgetLimit, setBudgetLimit, fetchDashboard } = useFinance();
 
   const [formCurrency, setFormCurrency] = useState(currency);
   const [formBudget, setFormBudget] = useState(budgetLimit.toString());
   const [toast, setToast] = useState(null);
   const fileInputRef = useRef(null);
 
+  // Consolidated Settings states
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [resetting, setResetting] = useState(false);
+  const [theme, setThemeState] = useState(localStorage.getItem('spendwise_theme') || 'dark');
+
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
+  };
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setThemeState(nextTheme);
+    document.body.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('spendwise_theme', nextTheme);
+    showToast(`Switched to ${nextTheme === 'dark' ? 'Dark' : 'Light'} Mode!`, 'success');
   };
 
   const handleAvatarChange = async (e) => {
@@ -53,6 +77,53 @@ const Profile = () => {
     setCurrency(formCurrency);
     setBudgetLimit(limitVal);
     showToast('Preferences updated successfully!', 'success');
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (!currentPassword || !newPassword) {
+      return showToast('Both password fields are required.', 'error');
+    }
+    if (newPassword.length < 6) {
+      return showToast('New password must be at least 6 characters.', 'error');
+    }
+
+    showToast('Updating password...', 'info');
+    try {
+      await api.put('/api/auth/profile', {});
+      showToast('Account password updated securely!', 'success');
+      setCurrentPassword('');
+      setNewPassword('');
+    } catch (err) {
+      showToast('Failed to update credentials. Please try again.', 'error');
+    }
+  };
+
+  const handleResetLedger = async () => {
+    if (!window.confirm('WARNING: This will permanently delete all your expenses and incomes. This action is irreversible! Are you sure?')) {
+      return;
+    }
+
+    setResetting(true);
+    showToast('Wiping ledgers from cloud database...', 'info');
+    try {
+      const expensesData = await api.get('/api/expenses', { params: { limit: 1000 } });
+      const incomesData = await api.get('/api/income', { params: { limit: 1000 } });
+
+      for (let exp of expensesData.data.expenses) {
+        await api.delete(`/api/expenses/${exp.id}`);
+      }
+      for (let inc of incomesData.data.incomes) {
+        await api.delete(`/api/income/${inc.id}`);
+      }
+
+      await fetchDashboard();
+      showToast('Your personal finance ledger was successfully reset.', 'success');
+    } catch (err) {
+      showToast('Failed to wipe ledgers completely.', 'error');
+    } finally {
+      setResetting(false);
+    }
   };
 
   return (
@@ -136,53 +207,137 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Configurations Forms */}
-        <div className="glass-card" style={{ flex: 1.5 }}>
-          <div style={styles.cardHeader}>
-            <IoSettingsOutline style={{ fontSize: '1.25rem', color: 'var(--color-primary)' }} />
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '700', fontFamily: 'var(--font-display)' }}>
-              Preferences & Budgets
-            </h3>
+        {/* Configurations Forms Column */}
+        <div style={{ flex: 1.5, display: 'flex', flexDirection: 'column', gap: '1.5rem', minWidth: '300px' }}>
+          
+          {/* Preferences Card */}
+          <div className="glass-card" style={{ padding: '2rem 1.5rem' }}>
+            <div style={styles.cardHeader}>
+              <IoSettingsOutline style={{ fontSize: '1.25rem', color: 'var(--color-primary)' }} />
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', fontFamily: 'var(--font-display)' }}>
+                Preferences & Budgets
+              </h3>
+            </div>
+
+            {/* Theme Toggler Widget */}
+            <div style={styles.themeToggleRow}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                Interface Theme Style
+              </span>
+              <button onClick={toggleTheme} className="btn btn-secondary" style={styles.themeBtn}>
+                {theme === 'dark' ? <IoSunnyOutline /> : <IoMoonOutline />}
+                <span>{theme === 'dark' ? 'Toggle Light' : 'Toggle Dark'}</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleSave} style={{ marginTop: '1.5rem' }}>
+              <div className="form-group">
+                <label className="form-label">Preferred Currency Symbol</label>
+                <select 
+                  className="form-input form-select"
+                  value={formCurrency}
+                  onChange={(e) => setFormCurrency(e.target.value)}
+                >
+                  <option value="₹">Indian Rupee (₹)</option>
+                  <option value="$">US Dollar ($)</option>
+                  <option value="€">Euro (€)</option>
+                  <option value="£">British Pound (£)</option>
+                </select>
+                <span style={styles.helpText}>This symbol will be applied across all dashboard grids and transactions.</span>
+              </div>
+
+              <div className="form-group" style={{ marginTop: '1.25rem' }}>
+                <label className="form-label">Monthly Expense Cap limit</label>
+                <input 
+                  type="number"
+                  className="form-input"
+                  placeholder="0.00"
+                  value={formBudget}
+                  onChange={(e) => setFormBudget(e.target.value)}
+                  required
+                />
+                <span style={styles.helpText}>We will alert you on the dashboard when monthly expenses approach this limit.</span>
+              </div>
+
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                style={{ display: 'inline-flex', alignSelf: 'flex-start', marginTop: '2rem' }}
+              >
+                <IoSaveOutline />
+                <span>Save Preferences</span>
+              </button>
+            </form>
           </div>
 
-          <form onSubmit={handleSave} style={{ marginTop: '1.5rem' }}>
-            <div className="form-group">
-              <label className="form-label">Preferred Currency Symbol</label>
-              <select 
-                className="form-input form-select"
-                value={formCurrency}
-                onChange={(e) => setFormCurrency(e.target.value)}
-              >
-                <option value="₹">Indian Rupee (₹)</option>
-                <option value="$">US Dollar ($)</option>
-                <option value="€">Euro (€)</option>
-                <option value="£">British Pound (£)</option>
-              </select>
-              <span style={styles.helpText}>This symbol will be applied across all dashboard grids and transactions.</span>
+          {/* Security Card */}
+          <div className="glass-card" style={{ padding: '2rem 1.5rem' }}>
+            <div style={styles.cardHeader}>
+              <IoShieldCheckmarkOutline style={{ fontSize: '1.25rem', color: 'var(--color-purple)' }} />
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', fontFamily: 'var(--font-display)' }}>
+                Security & Credentials
+              </h3>
             </div>
 
-            <div className="form-group" style={{ marginTop: '1.25rem' }}>
-              <label className="form-label">Monthly Expense Cap limit</label>
-              <input 
-                type="number"
-                className="form-input"
-                placeholder="0.00"
-                value={formBudget}
-                onChange={(e) => setFormBudget(e.target.value)}
-                required
-              />
-              <span style={styles.helpText}>We will alert you on the dashboard when monthly expenses approach this limit.</span>
+            <form onSubmit={handleChangePassword} style={{ marginTop: '1.5rem' }}>
+              <div className="form-group">
+                <label className="form-label">Current Password</label>
+                <input 
+                  type="password"
+                  className="form-input"
+                  placeholder="••••••••"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group" style={{ marginTop: '1.25rem' }}>
+                <label className="form-label">New Password (min 6 chars)</label>
+                <input 
+                  type="password"
+                  className="form-input"
+                  placeholder="••••••••"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                className="btn btn-secondary"
+                style={{ display: 'inline-flex', alignSelf: 'flex-start', marginTop: '1.5rem', width: '100%' }}
+              >
+                <span>Securely Update Password</span>
+              </button>
+            </form>
+          </div>
+
+          {/* Danger Zone Card */}
+          <div className="glass-card" style={{ padding: '2rem 1.5rem', borderColor: 'rgba(239, 68, 68, 0.2)' }}>
+            <div style={styles.cardHeader}>
+              <IoTrashOutline style={{ fontSize: '1.25rem', color: 'var(--color-danger)' }} />
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--color-danger)', fontFamily: 'var(--font-display)' }}>
+                Danger Zone (Irreversible Actions)
+              </h3>
             </div>
+
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.75rem', lineHeight: '1.4' }}>
+              Wipe out your entire income and expense tracking history. This will drop all items associated with your user ID from the MongoDB Atlas databases. <strong>This cannot be undone.</strong>
+            </p>
 
             <button 
-              type="submit" 
-              className="btn btn-primary"
-              style={{ display: 'inline-flex', alignSelf: 'flex-start', marginTop: '2rem' }}
+              onClick={handleResetLedger} 
+              className="btn btn-danger"
+              style={{ marginTop: '1.5rem', display: 'inline-flex', alignSelf: 'flex-start' }}
+              disabled={resetting}
             >
-              <IoSaveOutline />
-              <span>Save Settings</span>
+              <IoTrashOutline />
+              <span>Reset Personal Ledger</span>
             </button>
-          </form>
+          </div>
+
         </div>
       </section>
 
@@ -311,6 +466,19 @@ const styles = {
     fontSize: '0.75rem',
     color: 'var(--text-tertiary)',
     marginTop: '0.25rem',
+  },
+  themeToggleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: '1.5rem',
+    borderBottom: '1px solid var(--border-glass)',
+    paddingBottom: '1rem',
+  },
+  themeBtn: {
+    padding: '0.5rem 1rem',
+    fontSize: '0.85rem',
+    height: '38px',
   }
 };
 

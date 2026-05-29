@@ -123,6 +123,32 @@ const Dashboard = () => {
         />
       )}
 
+      {/* Dashboard Top Action Header */}
+      <div style={styles.dashboardHeader}>
+        <div>
+          <h2 style={styles.dashboardTitle}>Financial Overview</h2>
+          <p style={styles.dashboardSubtitle}>Monitor your cash flow, category caps, and financial trajectory.</p>
+        </div>
+        <div style={styles.headerActions}>
+          <button 
+            onClick={() => setIncomeModalOpen(true)} 
+            className="btn btn-success" 
+            style={styles.actionBtn}
+          >
+            <IoTrendingUp style={{ fontSize: '1.1rem' }} />
+            <span>Add Income</span>
+          </button>
+          <button 
+            onClick={() => setExpenseModalOpen(true)} 
+            className="btn btn-primary" 
+            style={styles.actionBtn}
+          >
+            <IoTrendingDown style={{ fontSize: '1.1rem' }} />
+            <span>Add Expense</span>
+          </button>
+        </div>
+      </div>
+
       {/* Welcome & Quick Summary Cards Grid */}
       <section style={styles.gridCards}>
         {/* Income Card */}
@@ -333,36 +359,6 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Floating Action Button with Popup Add Options */}
-      <div style={styles.fabWrapper}>
-        {fabMenuOpen && (
-          <div style={styles.fabMenu} className="glass-card animate-fade-in">
-            <button 
-              onClick={() => { setIncomeModalOpen(true); setFabMenuOpen(false); }} 
-              className="btn btn-success" 
-              style={styles.fabMenuItem}
-            >
-              <span>Add Income</span>
-              <IoTrendingUp />
-            </button>
-            <button 
-              onClick={() => { setExpenseModalOpen(true); setFabMenuOpen(false); }} 
-              className="btn btn-primary" 
-              style={styles.fabMenuItem}
-            >
-              <span>Add Expense</span>
-              <IoTrendingDown />
-            </button>
-          </div>
-        )}
-        <button 
-          className="fab" 
-          onClick={() => setFabMenuOpen(!fabMenuOpen)}
-          style={{ transform: fabMenuOpen ? 'rotate(45deg)' : 'none' }}
-        >
-          <IoAdd />
-        </button>
-      </div>
 
       {/* Overlays / Modals */}
       <ExpenseModal 
@@ -400,6 +396,40 @@ const styles = {
     width: '100%',
     position: 'relative',
     paddingBottom: '4rem',
+  },
+  dashboardHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    flexWrap: 'wrap',
+    gap: '1rem',
+    marginBottom: '0.25rem',
+  },
+  dashboardTitle: {
+    fontSize: '1.75rem',
+    fontWeight: '800',
+    fontFamily: 'var(--font-display)',
+    letterSpacing: '-0.02em',
+    color: 'var(--text-primary)',
+  },
+  dashboardSubtitle: {
+    fontSize: '0.85rem',
+    color: 'var(--text-secondary)',
+  },
+  headerActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+  },
+  actionBtn: {
+    height: '42px',
+    padding: '0 1.25rem',
+    fontSize: '0.875rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    borderRadius: '10px',
   },
   gridCards: {
     display: 'grid',

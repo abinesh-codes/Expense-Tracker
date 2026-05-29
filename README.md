@@ -79,12 +79,15 @@ SpendWise is a visually rich, premium, full-stack Expense Tracker Web Applicatio
 │   │   ├── layouts/
 │   │   │   └── MainLayout.jsx     # Responsive sidebar & header shell frame
 │   │   ├── pages/
+│   │   │   ├── Home.jsx           # Public animated landing page with hero banner & pricing
 │   │   │   ├── Login.jsx          # Glowing ambient sign-in page
 │   │   │   ├── Signup.jsx         # Account registration page
 │   │   │   ├── Dashboard.jsx      # Metrics grid & Recharts dashboard
 │   │   │   ├── Transactions.jsx   # Unified filterable ledger history page
-│   │   │   ├── Analytics.jsx      # AI Insights console & statement exporter
-│   │   │   ├── Profile.jsx        # Monthly budget limit & currency setup
+│   │   │   ├── Analytics.jsx      # AI Insights console
+│   │   │   ├── Reports.jsx        # Finance ledger statement audit & printer preview page
+│   │   │   ├── Settings.jsx       # Preferences, currency selectors & ledger reset page
+│   │   │   ├── Profile.jsx        # Account profile details & avatar configuration
 │   │   │   └── NotFound.jsx       # Graceful 404 page
 │   │   ├── services/
 │   │   │   └── api.js             # Axios instance with auto JWT header intercepters

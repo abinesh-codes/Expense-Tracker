@@ -11,7 +11,8 @@ import {
   IoMenuOutline, 
   IoCloseOutline,
   IoMoonOutline,
-  IoSunnyOutline
+  IoSunnyOutline,
+  IoDocumentTextOutline
 } from 'react-icons/io5';
 
 const MainLayout = () => {
@@ -40,14 +41,14 @@ const MainLayout = () => {
     <div className="app-container">
       {/* Side Navigation Bar */}
       <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
-        <div className="sidebar-logo">
+        <div className="sidebar-logo" onClick={() => navigate('/welcome')} style={{ cursor: 'pointer' }}>
           <span className="logo-icon">💸</span>
           <span className="logo-text">SpendWise</span>
         </div>
 
         <nav className="sidebar-nav">
           <NavLink 
-            to="/" 
+            to="/dashboard" 
             end
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setMobileMenuOpen(false)}
@@ -57,7 +58,7 @@ const MainLayout = () => {
           </NavLink>
 
           <NavLink 
-            to="/transactions" 
+            to="/dashboard/transactions" 
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setMobileMenuOpen(false)}
           >
@@ -66,7 +67,7 @@ const MainLayout = () => {
           </NavLink>
 
           <NavLink 
-            to="/analytics" 
+            to="/dashboard/analytics" 
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setMobileMenuOpen(false)}
           >
@@ -75,7 +76,18 @@ const MainLayout = () => {
           </NavLink>
 
           <NavLink 
-            to="/profile" 
+            to="/dashboard/reports" 
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <IoDocumentTextOutline className="nav-icon" />
+            <span>Reports</span>
+          </NavLink>
+
+
+
+          <NavLink 
+            to="/dashboard/profile" 
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setMobileMenuOpen(false)}
           >
@@ -86,7 +98,7 @@ const MainLayout = () => {
 
         {/* User Card & Logout inside Sidebar */}
         <div className="sidebar-footer">
-          <div className="user-profile-widget">
+          <div className="user-profile-widget" onClick={() => navigate('/dashboard/profile')} style={{ cursor: 'pointer' }}>
             <div className="avatar-placeholder" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {user?.avatar ? (
                 <img src={user.avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -117,7 +129,7 @@ const MainLayout = () => {
         <button className="menu-toggle-btn" onClick={() => setMobileMenuOpen(true)}>
           <IoMenuOutline />
         </button>
-        <div className="mobile-logo">SpendWise 💸</div>
+        <div className="mobile-logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>SpendWise 💸</div>
         <button className="theme-toggle-btn" onClick={toggleTheme}>
           {theme === 'dark' ? <IoSunnyOutline /> : <IoMoonOutline />}
         </button>
@@ -140,7 +152,7 @@ const MainLayout = () => {
 
             <div className="navbar-divider" />
 
-            <div className="navbar-profile" onClick={() => navigate('/profile')}>
+            <div className="navbar-profile" onClick={() => navigate('/dashboard/profile')}>
               <div className="navbar-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {user?.avatar ? (
                   <img src={user.avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />

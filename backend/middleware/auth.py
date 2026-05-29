@@ -28,7 +28,12 @@ def token_required(f):
         except jwt.InvalidTokenError:
             return jsonify({"error": "Session signature is invalid."}), 401
             
-        # Call request handler, injecting user_id
+        # Check if the first argument is a flask-restx Resource instance
+        from flask_restx import Resource
+        if args and isinstance(args[0], Resource):
+            return f(args[0], current_user_id, *args[1:], **kwargs)
+        
+        # Call standard request handler, injecting user_id
         return f(current_user_id, *args, **kwargs)
         
     return decorated
