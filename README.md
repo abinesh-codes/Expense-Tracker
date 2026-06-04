@@ -1,173 +1,574 @@
-# SpendWise — Premium Fintech Expense Tracker & Finance Planner
+# 💸 SpendWise — Premium Fintech Expense Tracker & Finance Planner
 
-SpendWise is a visually rich, premium, full-stack Expense Tracker Web Application. Designed with high-concept modern fintech aesthetics, it features silky-smooth animations, a responsive glassmorphism card UI, real-time analytics graphs, CSV and ReportLab PDF statement exports, and dynamic AI-modeled financial advice.
-
----
-
-## 💸 Key Features
-
-1. **Secure Access Protection**
-   * High-security User Signup & Login portals.
-   * State-driven input fields validation with immediate error notices.
-   * Cryptographically hashed passwords (using `bcrypt` in Python).
-   * Secure JWT sessions, automatically injected into Axios client requests.
-   * Persistent sessions remembered inside browser memory.
-
-2. **Fintech Metric Summary Cards**
-   * Dynamically tracks Total Incomes, Total Expenses, and Net Balance buffers.
-   * Shows glowing red/green borders based on cash flow health.
-   * Automatic alert trackers warning users if they approach their custom monthly budget caps.
-
-3. **Multi-mode Transaction CRUD Ledger**
-   * Form-driven Expense Creation (Food, Travel, Shopping, Bills, Entertainment, Health, Others).
-   * Income tracker by source (Salary, Freelance, Investments, Gifts, Others).
-   * Fully paginated list with real-time text searching (title/notes), category filtering, and sorting (Latest date, Oldest date, Highest amount, Lowest amount).
-   * Clicking line items launches editing screens; deletions trigger automated reactive summaries.
-
-4. **Interactive Recharts Analytics & Smart Insights**
-   * Real-time Area Chart illustrating income vs expense trajectory.
-   * Custom-colored Pie/Donut Chart visualizing discretionary allocations.
-   * Rules-powered AI Spending Advisor displaying tailored saving advice and category deficit notices.
-
-5. **Formal Statements Export**
-   * Download instant, valid CSV files of your transaction history.
-   * Generate beautifully structured, formal ReportLab PDF statements with custom colors (green indicators, rose red outlines, table headers, and net summary boxes).
-
-6. **Responsive Layouts & Dark Mode**
-   * Premium glassmorphism design variables.
-   * Fluid, dynamic sidebar navigation and top status navbars.
-   * Toggle button to seamlessly shift the entire application theme between Dark and Light mode.
-   * Custom rounded scrollbars and skeleton loading transitions.
+A full-stack fintech-inspired Expense Tracker and Personal Finance Management platform that helps users monitor income, expenses, budgets, and overall financial health through real-time analytics, AI-powered insights, and professional financial reports.
 
 ---
 
-## 🏗️ Architecture Layout
+# 🌐 Live Demo
 
-```
-├── backend/
-│   ├── app.py                     # Main server entrypoint
-│   ├── requirements.txt           # Python backend dependencies
-│   ├── .env                       # Active Atlas connection configurations
-│   ├── config/
-│   │   └── db.py                  # PyMongo client connector singleton
-│   ├── middleware/
-│   │   └── auth.py                # JWT authentication token decorator
-│   ├── controllers/
-│   │   ├── auth_controller.py     # Login, signup, and profiles handler
-│   │   ├── expense_controller.py  # Expense CRUD query manager
-│   │   ├── income_controller.py   # Income CRUD query manager
-│   │   └── analytics_controller.py# DB aggregates and PDF/CSV encoders
-│   ├── routes/
-│   │   ├── auth_routes.py         # Auth blueprint urls
-│   │   ├── expense_routes.py      # Expense blueprint urls
-│   │   ├── income_routes.py       # Income blueprint urls
-│   │   └── analytics_routes.py    # Report and aggregations blueprint urls
-│   └── utils/
-│       ├── ai_insights.py         # Rules-based saving recommendations
-│       └── report_generator.py    # ReportLab PDF & CSV generators
+### 🚀 Try SpendWise Online
+
+**Live Application:**  
+https://expense-tracker-frontend-xi-lyart.vercel.app/
+
+Explore the complete application including:
+
+- Secure Authentication
+- Expense & Income Management
+- Financial Analytics Dashboard
+- AI Spending Insights
+- PDF & CSV Report Generation
+- Dark / Light Mode Experience
+
+---
+
+# 📸 Application Screenshots
+
+### Landing Page
+
+<img width="1920" height="1080" alt="landing_page" src="https://github.com/user-attachments/assets/4af05346-f152-4f5e-9934-6ddff138260e" />
+
+### Dashboard Page
+
+<img width="1920" height="1080" alt="dashboard_page" src="https://github.com/user-attachments/assets/27c4a4f4-13ef-4958-bf04-87de0c6522c3" />
+
+### Transaction Page
+
+<img width="1920" height="1080" alt="transaction_page" src="https://github.com/user-attachments/assets/defc6f1f-3a62-4369-a983-16c027eed0a3" />
+
+### Profile Page
+
+<img width="1920" height="1080" alt="Profil;e" src="https://github.com/user-attachments/assets/ccc86fb8-1378-4210-9f3e-1d7d8750557d" />
+
+
+## 🏠 Landing Page
+
+The premium fintech-inspired landing page introduces users to SpendWise with modern glassmorphism UI, smooth animations, feature highlights, and intuitive navigation.
+
+![Landing Page](screenshots/landing_page.png)
+
+---
+
+## 📊 Dashboard Page
+
+The dashboard provides a complete overview of financial health through summary cards, income-expense metrics, budget tracking, interactive charts, and AI-generated financial insights.
+
+![Dashboard Page](screenshots/dashboard_page.png)
+
+---
+
+## 💳 Transaction Page
+
+The transaction management module allows users to add, edit, delete, search, filter, and sort income and expense records with real-time updates.
+
+![Transaction Page](screenshots/transaction_page.png)
+
+---
+
+## 👤 Profile Page
+
+The profile section enables users to manage account information, customize preferences, and personalize their SpendWise experience.
+
+![Profile Page](screenshots/profile_page.png)
+
+---
+
+# 🚀 Overview
+
+SpendWise is a modern finance management application designed to provide users with a seamless and visually engaging experience for tracking personal finances.
+
+The platform combines secure authentication, intelligent financial analytics, AI-driven spending recommendations, interactive dashboards, and professional report generation into a single ecosystem.
+
+Users can:
+
+- Track income and expenses
+- Categorize financial transactions
+- Monitor spending patterns
+- Set monthly budgets
+- View real-time analytics
+- Receive AI-based financial suggestions
+- Export statements in CSV and PDF formats
+- Access data securely from any device
+
+---
+
+# 📁 Project Structure
+
+```bash
+SPENDWISE/
 │
-├── frontend/                      # Frontend React.js codebase directory
-│   ├── src/                       # Frontend source files
-│   │   ├── assets/                # Static image/media elements
-│   │   ├── components/            # Reusable UI overlays & modals
-│   │   │   ├── ExpenseModal.jsx   # Expense form modal
-│   │   │   ├── IncomeModal.jsx    # Income form modal
-│   │   │   └── Toast.jsx          # Micro-interaction alerts
+├── backend/
+│   ├── config/
+│   │   └── db.py
+│   │
+│   ├── controllers/
+│   │   ├── auth_controller.py
+│   │   ├── expense_controller.py
+│   │   ├── income_controller.py
+│   │   └── analytics_controller.py
+│   │
+│   ├── middleware/
+│   │   └── auth.py
+│   │
+│   ├── routes/
+│   │   ├── auth_routes.py
+│   │   ├── expense_routes.py
+│   │   ├── income_routes.py
+│   │   └── analytics_routes.py
+│   │
+│   ├── utils/
+│   │   ├── ai_insights.py
+│   │   └── report_generator.py
+│   │
+│   ├── requirements.txt
+│   ├── app.py
+│   └── .env
+│
+├── frontend/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
 │   │   ├── context/
-│   │   │   ├── AuthContext.jsx    # User login state & JWT context
-│   │   │   └── FinanceContext.jsx # Transaction lists & reactive charts context
 │   │   ├── layouts/
-│   │   │   └── MainLayout.jsx     # Responsive sidebar & header shell frame
 │   │   ├── pages/
-│   │   │   ├── Home.jsx           # Public animated landing page with hero banner & pricing
-│   │   │   ├── Login.jsx          # Glowing ambient sign-in page
-│   │   │   ├── Signup.jsx         # Account registration page
-│   │   │   ├── Dashboard.jsx      # Metrics grid & Recharts dashboard
-│   │   │   ├── Transactions.jsx   # Unified filterable ledger history page
-│   │   │   ├── Analytics.jsx      # AI Insights console
-│   │   │   ├── Reports.jsx        # Finance ledger statement audit & printer preview page
-│   │   │   ├── Settings.jsx       # Preferences, currency selectors & ledger reset page
-│   │   │   ├── Profile.jsx        # Account profile details & avatar configuration
-│   │   │   └── NotFound.jsx       # Graceful 404 page
 │   │   ├── services/
-│   │   │   └── api.js             # Axios instance with auto JWT header intercepters
 │   │   ├── styles/
-│   │   │   └── index.css          # Styling themes, scrollbars & variables
-│   │   ├── App.jsx                # Route guards, redirects & providers wrapping
-│   │   └── main.jsx               # React mounting file
-│   ├── package.json               # Node packages description
-│   ├── vite.config.js             # Vite compiler config & port 5000 proxy
-│   └── index.html                 # Viewport, page titles & Outfit fonts preloading
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   │
+│   ├── package.json
+│   ├── vite.config.js
+│   └── index.html
+│
+└── README.md
 ```
 
 ---
 
-## 🚀 Local Installation Guide
+# 🛠️ Technology Stack
 
-### Prerequisite Accounts
-* **Python 3.9+** & **Node.js 18+** installed on your operating system.
-* A **MongoDB Atlas** database cluster (you can sign up for a free tier at mongodb.com).
+## Frontend
 
-### Step 1: Run the Backend Flask API Server
+- React.js
+- Vite
+- Context API
+- Axios
+- Recharts
+- CSS3
+- Glassmorphism UI
+- Responsive Design
 
-1. Open your terminal and navigate to the `backend/` directory:
-   ```bash
-   cd backend
-   ```
+## Backend
 
-2. Create a Python virtual environment (highly recommended to avoid library namespace conflicts):
-   ```bash
-   python -m venv venv
-   ```
+- Python Flask
+- Flask-JWT-Extended
+- Flask-CORS
+- Bcrypt
+- PyMongo
 
-3. Activate the virtual environment:
-   * **Windows Powershell**:
-     ```bash
-     .\venv\Scripts\Activate.ps1
-     ```
-   * **macOS / Linux**:
-     ```bash
-     source venv/bin/activate
-     ```
+## Database
 
-4. Install the backend requirements:
-   ```bash
-   pip install -r requirements.txt
-   ```
+- MongoDB Atlas
 
-5. Confirm the `.env` variables. Open the `backend/.env` file and verify your MongoDB connection string (`MONGO_URI`) and port definitions. You can configure a custom `JWT_SECRET` key to ensure session protection.
+## Reporting
 
-6. Launch the server in development mode:
-   ```bash
-   python app.py
-   ```
-   The Flask backend server will spin up on **`http://localhost:5000`** with real-time logs!
+- ReportLab PDF Generator
+- CSV Export Utility
 
----
+## Authentication
 
-### Step 2: Run the Frontend React (Vite) Application
+- JWT Authentication
+- Password Hashing using Bcrypt
 
-1. Open a new terminal window and navigate to the `frontend/` directory:
-   ```bash
-   cd frontend
-   ```
+## Deployment
 
-2. Install the frontend dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Spin up the Vite local compiler dev server:
-   ```bash
-   npm run dev
-   ```
-   The dev server automatically hosts the application at **`http://localhost:5173`**! Open this address in your browser.
+- Frontend: Vercel
+- Backend: Vercel
 
 ---
 
-## 🔒 Security Compliance Features
-* **Password Encryption**: All password credentials are automatically salted and hashed via bcrypt before insertion. Plain password records are never kept in the DB.
-* **Route Guards**: Frontend views are wrapped in React route guards checking JWT validity. Unauthorized page hits are safely rerouted.
-* **Token Expiration**: Signed tokens automatically expire in Letter format after 24 hours. The app automatically signs the user out to protect their session when tokens expire.
-* **CORS Policies**: Explicit headers set up on the Flask server block unauthorized origins.
-* **Axios Interceptor**: Outgoing API hits read and append JWT tokens safely, separating security concerns from UI components.
+# 🔄 Workflow
+
+## 1. User Authentication Module
+
+### Signup
+
+- User creates a new account
+- Input validation is performed
+- Password is encrypted using Bcrypt
+- User information is stored in MongoDB Atlas
+
+### Login
+
+- Credentials are verified
+- JWT token is generated
+- Session is securely maintained
+- Protected routes become accessible
+
+---
+
+## 2. Transaction Management Module
+
+### Expense Management
+
+Users can:
+
+- Add expenses
+- Edit expenses
+- Delete expenses
+- Categorize spending
+
+Categories:
+
+- Food
+- Travel
+- Shopping
+- Bills
+- Entertainment
+- Health
+- Others
+
+### Income Management
+
+Users can:
+
+- Add income
+- Update income
+- Delete income
+
+Income Sources:
+
+- Salary
+- Freelance
+- Investments
+- Gifts
+- Others
+
+---
+
+## 3. Financial Analytics Engine
+
+The analytics module continuously processes transaction data and generates:
+
+### Financial Summary Cards
+
+- Total Income
+- Total Expenses
+- Current Balance
+- Monthly Budget Status
+
+### Interactive Charts
+
+#### Area Chart
+
+Displays:
+
+- Income Growth
+- Expense Trends
+- Cash Flow Movement
+
+#### Pie / Donut Chart
+
+Visualizes:
+
+- Category-wise Spending
+- Budget Distribution
+- Expense Allocation
+
+---
+
+## 4. AI Financial Advisor
+
+The AI Insights Engine analyzes spending patterns and provides:
+
+- Saving Recommendations
+- Budget Warnings
+- Expense Reduction Suggestions
+- Overspending Alerts
+- Financial Health Insights
+
+Example:
+
+> "Your food expenses increased significantly this month. Consider setting a weekly dining budget to improve savings."
+
+---
+
+## 5. Reporting & Export System
+
+Users can generate:
+
+### CSV Reports
+
+- Complete transaction history
+- Spreadsheet-compatible exports
+- Financial record maintenance
+
+### PDF Statements
+
+Professional reports containing:
+
+- Income Summary
+- Expense Summary
+- Category Breakdown
+- Net Balance Overview
+- Styled Financial Tables
+
+---
+
+# 📊 Data Flow
+
+```text
+User Actions
+      │
+      ▼
+React Frontend
+      │
+      ▼
+Axios API Requests
+      │
+      ▼
+Flask Backend
+      │
+      ▼
+JWT Authentication
+      │
+      ▼
+MongoDB Atlas
+      │
+      ▼
+Analytics Engine
+      │
+      ▼
+AI Insights Generator
+      │
+      ▼
+Dashboard Visualization
+      │
+      ▼
+Reports & Exports
+```
+
+---
+
+# 🎯 Key Features
+
+### 🔐 Secure Authentication
+
+- JWT Authentication
+- Password Encryption
+- Protected Routes
+- Session Management
+
+### 💰 Expense & Income Tracking
+
+- Complete CRUD Operations
+- Category-based Tracking
+- Real-time Updates
+
+### 📈 Advanced Analytics
+
+- Interactive Charts
+- Financial Trends
+- Budget Monitoring
+
+### 🤖 AI Spending Advisor
+
+- Personalized Suggestions
+- Budget Recommendations
+- Spending Analysis
+
+### 📄 Professional Reports
+
+- CSV Export
+- PDF Statement Generation
+- Downloadable Financial Records
+
+### 🎨 Premium User Interface
+
+- Glassmorphism Design
+- Dark / Light Theme
+- Responsive Layout
+- Smooth Animations
+
+---
+
+# 🔒 Security Features
+
+### Password Protection
+
+- Passwords hashed using Bcrypt
+- Plain-text passwords are never stored
+
+### JWT Authentication
+
+- Secure token-based authorization
+- Automatic session validation
+
+### Route Protection
+
+- Prevents unauthorized access
+- Secures API endpoints
+
+### CORS Security
+
+- Restricted API communication
+- Safe cross-origin requests
+
+### Token Expiration
+
+- Automatic logout after expiration
+- Reduced security risks
+
+---
+
+# 🚀 Getting Started
+
+## Prerequisites
+
+Install the following:
+
+- Python 3.9+
+- Node.js 18+
+- MongoDB Atlas Account
+
+---
+
+## Backend Setup
+
+### Clone Repository
+
+```bash
+git clone <repository-url>
+cd spendwise/backend
+```
+
+### Create Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+### Activate Environment
+
+Windows:
+
+```bash
+.\venv\Scripts\activate
+```
+
+Linux / macOS:
+
+```bash
+source venv/bin/activate
+```
+
+### Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Configure Environment Variables
+
+Create a `.env` file:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+PORT=5000
+```
+
+### Run Backend
+
+```bash
+python app.py
+```
+
+Backend URL:
+
+```bash
+http://localhost:5000
+```
+
+---
+
+## Frontend Setup
+
+Navigate to frontend:
+
+```bash
+cd frontend
+```
+
+Install packages:
+
+```bash
+npm install
+```
+
+Run application:
+
+```bash
+npm run dev
+```
+
+Frontend URL:
+
+```bash
+http://localhost:5173
+```
+
+---
+
+# ⚙️ Environment Variables
+
+```env
+MONGO_URI=
+JWT_SECRET=
+PORT=5000
+FRONTEND_URL=http://localhost:5173
+```
+
+---
+
+# 🎨 Frontend Highlights
+
+- Premium Fintech UI
+- Glassmorphism Cards
+- Responsive Sidebar Navigation
+- Interactive Analytics Dashboard
+- Dark & Light Theme Toggle
+- Toast Notifications
+- Skeleton Loading Effects
+- Mobile-Friendly Design
+
+---
+
+# 🌟 Future Enhancements
+
+- Email OTP Verification
+- AI Chat Financial Assistant
+- Multi-Currency Support
+- Bank Account Integration
+- Expense Forecasting
+- Investment Portfolio Tracking
+- Recurring Transactions
+- Push Notifications
+- Progressive Web App (PWA)
+- Mobile Application
+
+---
+
+# 👨‍💻 Author
+
+**ABINESH R**
+
+Full Stack Developer | MERN Stack Developer | Python Developer
+
+---
+
+# ⭐ Support the Project
+
+If you found this project useful, consider giving it a ⭐ Star on GitHub.
+
+Your support helps improve the project and motivates future enhancements.
