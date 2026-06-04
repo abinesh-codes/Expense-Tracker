@@ -24,28 +24,11 @@ Explore the complete application including:
 
 # 📸 Application Screenshots
 
-### Landing Page
-
-<img width="1920" height="1080" alt="landing_page" src="https://github.com/user-attachments/assets/4af05346-f152-4f5e-9934-6ddff138260e" />
-
-### Dashboard Page
-
-<img width="1920" height="1080" alt="dashboard_page" src="https://github.com/user-attachments/assets/27c4a4f4-13ef-4958-bf04-87de0c6522c3" />
-
-### Transaction Page
-
-<img width="1920" height="1080" alt="transaction_page" src="https://github.com/user-attachments/assets/defc6f1f-3a62-4369-a983-16c027eed0a3" />
-
-### Profile Page
-
-<img width="1920" height="1080" alt="Profil;e" src="https://github.com/user-attachments/assets/ccc86fb8-1378-4210-9f3e-1d7d8750557d" />
-
-
 ## 🏠 Landing Page
 
 The premium fintech-inspired landing page introduces users to SpendWise with modern glassmorphism UI, smooth animations, feature highlights, and intuitive navigation.
 
-![Landing Page](screenshots/landing_page.png)
+<img width="1920" height="1080" alt="landing_page" src="https://github.com/user-attachments/assets/4af05346-f152-4f5e-9934-6ddff138260e" />
 
 ---
 
@@ -53,7 +36,7 @@ The premium fintech-inspired landing page introduces users to SpendWise with mod
 
 The dashboard provides a complete overview of financial health through summary cards, income-expense metrics, budget tracking, interactive charts, and AI-generated financial insights.
 
-![Dashboard Page](screenshots/dashboard_page.png)
+<img width="1920" height="1080" alt="dashboard_page" src="https://github.com/user-attachments/assets/27c4a4f4-13ef-4958-bf04-87de0c6522c3" />
 
 ---
 
@@ -61,7 +44,7 @@ The dashboard provides a complete overview of financial health through summary c
 
 The transaction management module allows users to add, edit, delete, search, filter, and sort income and expense records with real-time updates.
 
-![Transaction Page](screenshots/transaction_page.png)
+<img width="1920" height="1080" alt="transaction_page" src="https://github.com/user-attachments/assets/defc6f1f-3a62-4369-a983-16c027eed0a3" />
 
 ---
 
@@ -69,7 +52,7 @@ The transaction management module allows users to add, edit, delete, search, fil
 
 The profile section enables users to manage account information, customize preferences, and personalize their SpendWise experience.
 
-![Profile Page](screenshots/profile_page.png)
+<img width="1920" height="1080" alt="Profil;e" src="https://github.com/user-attachments/assets/ccc86fb8-1378-4210-9f3e-1d7d8750557d" />
 
 ---
 
